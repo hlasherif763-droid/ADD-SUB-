@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Addition and Subtraction - Grade 5 British Curriculum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 50%, #fef3c7 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .slide {
+            display: none;
+            min-height: 100vh;
+            width: 100vw;
+            padding: 7.5rem 2rem 5rem 2rem;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .interactive-card {
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .interactive-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            padding: 0.85rem 1.75rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover { transform: scale(1.08); }
+        .nav-btn:active { transform: scale(0.95); }
+
+        .prev-btn { left: 2rem; background-color: #ff6b6b; color: white; }
+        .next-btn { right: 2rem; background-color: #10b981; color: white; }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 10px;
+            background: linear-gradient(90deg, #3b82f6, #ec4899, #10b981);
+            transition: width 0.3s ease;
+            z-index: 60;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .logos-header {
+            position: fixed;
+            top: 0.75rem;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            pointer-events: auto;
+            min-height: 85px;
+            z-index: 45;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 18px;
+            border: 2px solid rgba(186, 230, 253, 0.9);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+        }
+
+        .logo-container:hover {
+            border-color: #38bdf8;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.12);
+        }
+
+        .logo-img {
+            height: 64px;
+            max-width: 220px;
+            object-fit: contain;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .logo-img:hover { transform: scale(1.05); }
+
+        .editable-text {
+            border-bottom: 1px dashed transparent;
+            transition: all 0.2s;
+            padding: 1px 4px;
+            border-radius: 4px;
+        }
+        .editable-text:hover {
+            border-bottom-color: #0284c7;
+            background: rgba(240, 249, 255, 0.7);
+        }
+        .editable-text:focus {
+            border-bottom-color: #0284c7;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+            outline: none;
+        }
+
+        .book-page-container {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border: 4px solid #bae6fd;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .book-header-banner {
+            background: linear-gradient(90deg, #0284c7, #0d9488);
+            color: white;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast {
+            position: fixed;
+            top: 6rem;
+            right: 2rem;
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 250;
+            display: none;
+            animation: fadeIn 0.3s forwards;
+            font-weight: 700;
+            border-left: 5px solid #10b981;
+        }
+
+        .hint-box {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress" class="progress-bar" style="width: 12.5%;"></div>
+    <canvas id="confetti-canvas"></canvas>
+    <div id="toast" class="toast">Saved!</div>
+
+    <!-- Motivation Overlay Modal -->
+    <div id="motivation-overlay" class="fixed inset-0 z-[150] hidden items-center justify-center bg-sky-900/40 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div id="motivation-card" class="bg-gradient-to-br from-amber-400 via-rose-500 to-indigo-600 p-10 rounded-[2.5rem] shadow-2xl border-8 border-white text-center transform scale-50 transition-all duration-500 max-w-2xl w-11/12 relative">
+            <div class="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-yellow-300 w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-lg animate-bounce">
+                <i class="fa-solid fa-star text-5xl text-amber-600"></i>
+            </div>
+            <h2 class="text-5xl md:text-6xl font-extrabold text-white mt-8 mb-4 drop-shadow-md leading-tight">
+                Don't be shy <br><span class="text-yellow-300 text-6xl md:text-7xl">to try!</span>
+            </h2>
+            <p class="text-xl md:text-2xl text-white font-bold mb-8 opacity-95">
+                Mistakes are proof that you are trying! You are a Math Superstar! ⭐
+            </p>
+            <button onclick="proceedToPractice()" class="bg-white hover:bg-gray-100 text-indigo-700 font-extrabold text-2xl px-12 py-4 rounded-full shadow-xl transition transform hover:scale-105 active:scale-95">
+                I'm Ready for Practice! <i class="fa-solid fa-rocket ml-2 text-rose-500"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Logo Exchange Modal -->
+    <div id="logo-modal" class="fixed inset-0 z-[200] items-center justify-center bg-sky-950/60 backdrop-blur-sm transition-opacity duration-300 opacity-0 hidden">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border-4 border-sky-300 max-w-lg w-11/12 relative transform transition-all duration-300 scale-95" id="logo-modal-card">
+            <button onclick="closeLogoModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="text-center mb-5">
+                <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 shadow-sm border-2 border-sky-200">
+                    <i class="fa-solid fa-image"></i>
+                </div>
+                <h3 id="logo-modal-title" class="text-2xl font-extrabold text-sky-950">Paste or Upload School Logo</h3>
+                <p class="text-sm text-gray-500 mt-1">Press <kbd class="px-2 py-0.5 bg-gray-100 border rounded font-bold text-sky-800">Ctrl + V</kbd> to paste your copied logo picture directly, or click below to upload from your device!</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-6 bg-sky-50 rounded-2xl border-2 border-dashed border-sky-400 text-center cursor-pointer hover:bg-sky-100 transition" onclick="triggerFileInput()">
+                    <i class="fa-solid fa-paste text-3xl text-sky-600 mb-2"></i>
+                    <div class="font-bold text-sky-900 text-base">Click to Upload Picture — or Press Ctrl+V to Paste</div>
+                    <div class="text-xs text-gray-500 mt-1">Picture only (no words) • Stays saved on refresh &amp; HTML download</div>
+                </div>
+
+                <div class="pt-3 border-t border-gray-200 flex justify-between items-center">
+                    <button onclick="closeLogoModal()" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-2">Cancel</button>
+                    <button onclick="closeLogoModal(); downloadPermanentHTML();" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-download"></i> Save &amp; Download HTML Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="leftLogoInput" class="hidden" accept="image/*" onchange="handleLogoUpload(event, 'left')">
+    <input type="file" id="rightLogoInput" class="hidden" accept="image/*" onchange="handleLogoUpload(event, 'right')">
+
+    <!-- Persistent Picture-Only Header -->
+    <div class="logos-header">
+        <!-- Left School Logo (Picture Only - No Words) -->
+        <div id="left-logo-container" class="logo-container group cursor-pointer" onclick="openLogoModal('left')" title="Click to upload or press Ctrl+V to paste Left School Logo">
+            <div class="relative flex items-center justify-center">
+                <img id="logo-left-img" class="logo-img" src="data:image/png;base64,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" alt="Left School Logo">
+                <span class="export-hide absolute -bottom-2 -right-2 bg-sky-600 text-white text-[10px] w-6 h-6 rounded-full flex items-center justify-center shadow border-2 border-white opacity-0 group-hover:opacity-100 transition" title="Change or Paste Logo">
+                    <i class="fa-solid fa-camera"></i>
+                </span>
+            </div>
+        </div>
+
+        <!-- Center Curriculum Badge & Permanent Download Action -->
+        <div class="flex flex-col items-center gap-1.5">
+            <div class="hidden md:block">
+                <span id="center-badge" class="bg-amber-100 text-amber-900 text-xs font-extrabold px-4 py-1.5 rounded-full border-2 border-amber-300 shadow-sm inline-block">
+                    ⭐ Grade 5 Mathematics — Unit 5: Addition &amp; Subtraction
+                </span>
+            </div>
+            <div class="export-hide flex items-center gap-2">
+                <button onclick="openLogoModal('left')" class="bg-white/90 hover:bg-sky-50 text-sky-800 border border-sky-300 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm transition flex items-center gap-1" title="Paste or Upload Left Logo Picture">
+                    <i class="fa-solid fa-image text-sky-600"></i> Left Pic
+                </button>
+                <button onclick="downloadPermanentHTML()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-[11px] font-extrabold px-3.5 py-1 rounded-full shadow-md hover:shadow-lg transition transform hover:scale-105 flex items-center gap-1.5" title="Download this presentation with your pasted logo pictures permanently saved inside the file!">
+                    <i class="fa-solid fa-floppy-disk"></i> Save &amp; Download HTML
+                </button>
+                <button onclick="openLogoModal('right')" class="bg-white/90 hover:bg-emerald-50 text-emerald-800 border border-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm transition flex items-center gap-1" title="Paste or Upload Right Logo Picture">
+                    <i class="fa-solid fa-image text-emerald-600"></i> Right Pic
+                </button>
+            </div>
+        </div>
+
+        <!-- Right School Logo (Picture Only - No Words) -->
+        <div id="right-logo-container" class="logo-container group cursor-pointer" onclick="openLogoModal('right')" title="Click to upload or press Ctrl+V to paste Right School Logo">
+            <div class="relative flex items-center justify-center">
+                <img id="logo-right-img" class="logo-img" src="data:image/png;base64,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" alt="Right School Logo">
+                <span class="export-hide absolute -bottom-2 -right-2 bg-emerald-600 text-white text-[10px] w-6 h-6 rounded-full flex items-center justify-center shadow border-2 border-white opacity-0 group-hover:opacity-100 transition" title="Change or Paste Logo">
+                    <i class="fa-solid fa-camera"></i>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 1: Title Slide -->
+    <div class="slide active" id="slide-1">
+        <div class="max-w-4xl text-center">
+            <div class="inline-block bg-sky-100 text-sky-800 font-bold px-6 py-2 rounded-full mb-4 border-2 border-sky-300 text-lg shadow-sm">
+                <i class="fa-solid fa-calculator mr-2 text-sky-600"></i> Grade 5 British Curriculum — Unit 5 (Pages 51–62)
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold text-sky-950 mb-4 leading-tight drop-shadow-sm">
+                Addition and <span class="text-rose-500">Subtraction</span> <br>
+                <span class="text-amber-500 text-4xl md:text-5xl">&amp; Decimals Mastery</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto font-medium">
+                Complete interactive practice matching exact book questions with step-by-step visual tools!
+            </p>
+
+            <div class="bg-white/90 backdrop-blur-md p-6 rounded-3xl border-4 border-amber-300 inline-block shadow-xl mb-8">
+                <div class="flex items-center justify-center gap-4">
+                    <div class="w-16 h-16 bg-gradient-to-tr from-amber-400 to-yellow-300 text-white rounded-2xl flex items-center justify-center text-3xl shadow-md">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div class="text-left">
+                        <span id="author-label" contenteditable="true" oninput="saveHeaderState()" class="editable-text text-xs font-bold text-amber-600 uppercase tracking-widest block">Created By</span>
+                        <span id="author-name" contenteditable="true" oninput="saveHeaderState()" class="editable-text text-2xl font-bold text-gray-800 block">Eng / Hla Elsafty</span>
+                        <span id="author-role" contenteditable="true" oninput="saveHeaderState()" class="editable-text text-sm text-sky-600 font-bold block">Mathematics Specialist</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button onclick="changeSlide(1)" class="bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white font-extrabold text-2xl px-10 py-4 rounded-full shadow-lg hover:shadow-2xl transition transform hover:scale-105 active:scale-95 flex items-center gap-3 mx-auto">
+                    <span>Start Learning Journey</span>
+                    <i class="fa-solid fa-arrow-right animate-bounce"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: Getting Started (Page 51) -->
+    <div class="slide" id="slide-2">
+        <div class="max-w-5xl w-full">
+            <div class="text-center mb-4">
+                <span class="bg-purple-100 text-purple-700 text-sm font-bold px-4 py-1.5 rounded-full border border-purple-300">
+                    <i class="fa-solid fa-book-open text-amber-500 mr-1"></i> Getting Started (Learner's Book Page 51)
+                </span>
+                <h2 class="text-3xl font-bold text-gray-800 mt-2">Unit 5 Warm-Up Questions</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Q1: Missing Numbers -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-sky-200 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-lg text-sky-800">1. Find the missing numbers. <span class="bg-sky-100 text-sky-800 text-xs px-2 py-0.5 rounded ml-2">p. 51</span></h3>
+                            <button onclick="toggleHint('hint-q1')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 transition">
+                                <i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i> Hint
+                            </button>
+                        </div>
+                        <div id="hint-q1" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                            💡 <strong>Hint:</strong> Use inverse operations! <br>• For <code>100 - ? = 37</code>, subtract: <code>100 - 37</code>.<br>• For <code>131 + ? = 190</code>, subtract: <code>190 - 131</code>.
+                        </div>
+
+                        <div class="space-y-4 my-3">
+                            <div class="bg-sky-50 p-3 rounded-2xl border border-sky-200 flex justify-between items-center">
+                                <span class="font-bold text-gray-700 text-base">a) 100 - <input type="number" id="warm-1a" class="w-16 text-center border-2 border-sky-400 rounded-lg p-1 bg-white font-bold" placeholder="?"> = 37</span>
+                                <button onclick="checkWarm1a()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm px-3 py-1.5 rounded-xl">Check</button>
+                            </div>
+                            <div class="bg-sky-50 p-3 rounded-2xl border border-sky-200 flex justify-between items-center">
+                                <span class="font-bold text-gray-700 text-base">b) 131 + <input type="number" id="warm-1b" class="w-16 text-center border-2 border-sky-400 rounded-lg p-1 bg-white font-bold" placeholder="?"> = 190</span>
+                                <button onclick="checkWarm1b()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm px-3 py-1.5 rounded-xl">Check</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="warm1-feedback" class="text-center font-bold text-sm min-h-[20px]"></div>
+                </div>
+
+                <!-- Q2: Zara's Place Value Number -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-emerald-200 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-lg text-emerald-800">2. Zara describes a number. <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded ml-2">p. 51</span></h3>
+                            <button onclick="toggleHint('hint-q2')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 transition">
+                                <i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i> Hint
+                            </button>
+                        </div>
+                        <div id="hint-q2" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                            💡 <strong>Hint:</strong> 6 thousands = 6,000. Combine with 708 ones: <code>6,000 + 708 = 6,708</code>.
+                        </div>
+
+                        <p class="text-gray-600 text-sm mb-3"><em>"My number has 6 thousands and 708 ones."</em></p>
+
+                        <div class="space-y-3">
+                            <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                                <label class="block text-xs font-bold text-emerald-800 mb-1">a) Write in digits and in words:</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="zara-digits" class="w-full border-2 border-emerald-300 rounded-lg p-1.5 font-bold text-center text-sm" placeholder="e.g. 6708">
+                                    <button onclick="checkZaraDigits()" class="bg-emerald-500 text-white font-bold text-xs px-3 rounded-lg">Check</button>
+                                </div>
+                            </div>
+                            <div class="bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                                <label class="block text-xs font-bold text-emerald-800 mb-1">b) Regroup her number in a different way:</label>
+                                <select id="zara-regroup" onchange="checkZaraRegroup()" class="w-full border-2 border-emerald-300 rounded-lg p-1 text-xs font-bold bg-white">
+                                    <option value="">Select a valid regrouping...</option>
+                                    <option value="valid">67 hundreds and 8 ones (6700 + 8)</option>
+                                    <option value="invalid">670 hundreds and 8 ones</option>
+                                    <option value="valid2">60 hundreds and 708 ones</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="zara-feedback" class="text-center font-bold text-sm mt-1 min-h-[20px]"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Q3: Column Calculation Errors -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-amber-300 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-lg text-amber-900">3. Look at these calculations. <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded ml-2">p. 51</span></h3>
+                            <button onclick="toggleHint('hint-q3')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 transition">
+                                <i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i> Hint
+                            </button>
+                        </div>
+                        <div id="hint-q3" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                            💡 Add from right to left: 3+3=6, 7+1=8, 9+7=16 (write 6, carry 1), 5+1+1=7! Total = 7,686.
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Explain any errors and write the correct answer for <code>5973 + 1713</code>.</p>
+                        <div class="flex gap-2 items-center">
+                            <input type="number" id="correct-calc-ans" class="border-2 border-amber-400 rounded-xl p-2 font-bold text-center w-36" placeholder="Correct total">
+                            <button onclick="checkCorrectCalc()" class="bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-4 py-2 rounded-xl text-sm">Verify</button>
+                        </div>
+                    </div>
+                    <div id="calc-error-feedback" class="mt-2 text-xs font-bold text-amber-800 min-h-[20px]"></div>
+                </div>
+
+                <!-- Q4: Negative Inequality -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-indigo-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-bold text-lg text-indigo-900">4. Negative Inequality <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded ml-2">p. 51</span></h3>
+                            <button onclick="toggleHint('hint-q4-ineq')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-3 py-1 rounded-full border border-amber-300 transition">
+                                <i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i> Hint
+                            </button>
+                        </div>
+                        <div id="hint-q4-ineq" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                            💡 Integers between -6 and -3 on a number line are -5 and -4!
+                        </div>
+                        <p class="text-gray-700 text-sm mb-3">If <strong>-6 &lt; <span class="text-indigo-600 font-bold">□</span> &lt; -3</strong>, what whole number could <span class="text-indigo-600 font-bold">□</span> represent?</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="ineq-ans" class="border-2 border-indigo-300 rounded-xl p-2 font-bold text-center w-40 text-sm" placeholder="e.g. -5 or -4">
+                            <button onclick="checkInequality()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-sm">Check</button>
+                        </div>
+                    </div>
+                    <div id="ineq-feedback" class="mt-2 text-xs font-bold text-indigo-900 min-h-[20px]"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: Everyday Life & Gymnastics Decimals (Pages 52-53) -->
+    <div class="slide" id="slide-3">
+        <div class="max-w-5xl w-full">
+            <div class="text-center mb-6">
+                <span class="bg-sky-100 text-sky-800 text-sm font-bold px-4 py-1.5 rounded-full border border-sky-300">
+                    <i class="fa-solid fa-earth-americas text-sky-600 mr-1"></i> Real World Connections (Learner's Book Pages 52–53)
+                </span>
+                <h2 class="text-3xl font-extrabold text-gray-800 mt-2">Weather &amp; Decimals in Action</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-3xl border-4 border-indigo-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-indigo-900"><i class="fa-solid fa-cloud-snowflake text-sky-400 mr-2"></i> Weather Reports &amp; Sub-Zero (p. 53)</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-4">A temperature of <strong>-5°C</strong> means 5 degrees below zero. Storage below <strong>-10°C</strong> keeps food frozen.</p>
+
+                        <div class="bg-indigo-900 text-white p-4 rounded-2xl text-center shadow-inner">
+                            <div class="text-xs uppercase text-indigo-300 font-bold mb-1">Interactive Thermometer</div>
+                            <div id="temp-display" class="text-4xl font-extrabold my-2 text-cyan-300">-10°C</div>
+                            <div class="flex justify-center gap-3 mt-3">
+                                <button onclick="adjustTemp(-1)" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold"><i class="fa-solid fa-minus"></i> Colder (-1°)</button>
+                                <button onclick="adjustTemp(1)" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-sm font-bold"><i class="fa-solid fa-plus"></i> Warmer (+1°)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-3xl border-4 border-rose-200 shadow-xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-rose-900"><i class="fa-solid fa-medal text-rose-500 mr-2"></i> Gymnastics Scores (p. 52)</h3>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left border-collapse bg-rose-50 rounded-xl overflow-hidden">
+                            <thead class="bg-rose-500 text-white font-bold">
+                                <tr>
+                                    <th class="p-2">Gymnast</th>
+                                    <th class="p-2">Score 1</th>
+                                    <th class="p-2">Score 2</th>
+                                    <th class="p-2">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-bold text-gray-800">
+                                <tr class="border-b border-rose-200">
+                                    <td class="p-2">Gymnast 1</td>
+                                    <td class="p-2">7.72</td>
+                                    <td class="p-2">9.05</td>
+                                    <td class="p-2 text-rose-600">16.77</td>
+                                </tr>
+                                <tr class="border-b border-rose-200">
+                                    <td class="p-2">Gymnast 2</td>
+                                    <td class="p-2">6.81</td>
+                                    <td class="p-2">8.15</td>
+                                    <td class="p-2 text-rose-600">14.96</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2">Gymnast 3</td>
+                                    <td class="p-2">8.26</td>
+                                    <td class="p-2">9.53</td>
+                                    <td class="p-2 text-emerald-600 font-extrabold">17.79 ⭐</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">Adding difficulty and performance scores with decimals aligned.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: Interactive Methods (Page 54) -->
+    <div class="slide" id="slide-4">
+        <div class="max-w-5xl w-full">
+            <div class="text-center mb-4">
+                <span class="bg-amber-100 text-amber-800 text-sm font-bold px-4 py-1.5 rounded-full border border-amber-300">
+                    <i class="fa-solid fa-graduation-cap text-amber-600 mr-1"></i> Visual Methods Lab (Learner's Book Page 54)
+                </span>
+                <h2 class="text-3xl font-extrabold text-gray-800 mt-1">Decomposition &amp; Column Regrouping</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl border-4 border-sky-300 shadow-xl">
+                <div class="flex justify-center gap-4 mb-6">
+                    <button id="btn-method-1" onclick="switchMethod(1)" class="bg-sky-500 text-white font-bold px-6 py-2.5 rounded-full shadow-md">
+                        <i class="fa-solid fa-shapes mr-2"></i> Visual Decompose Builder
+                    </button>
+                    <button id="btn-method-2" onclick="switchMethod(2)" class="bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-full shadow-md">
+                        <i class="fa-solid fa-table-cells mr-2"></i> Worked Example 1 Solver
+                    </button>
+                </div>
+
+                <div id="method-1-content" class="bg-sky-50 p-6 rounded-2xl border-2 border-sky-200">
+                    <h3 class="font-bold text-lg text-sky-900 mb-3 text-center">Interactive Number Decomposer</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <div class="bg-white p-3 rounded-xl border border-sky-300 text-center shadow-sm">
+                            <span class="text-xs font-bold text-sky-600 block">Tens (10)</span>
+                            <input type="range" id="dec-tens" min="0" max="2" value="1" class="w-full mt-2 accent-sky-600" oninput="updateDecompose()">
+                            <span id="val-tens" class="text-lg font-extrabold text-sky-900">10</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-sky-300 text-center shadow-sm">
+                            <span class="text-xs font-bold text-emerald-600 block">Ones (1)</span>
+                            <input type="range" id="dec-ones" min="0" max="9" value="5" class="w-full mt-2 accent-emerald-600" oninput="updateDecompose()">
+                            <span id="val-ones" class="text-lg font-extrabold text-emerald-900">5</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-sky-300 text-center shadow-sm">
+                            <span class="text-xs font-bold text-amber-600 block">Tenths (0.1)</span>
+                            <input type="range" id="dec-tenths" min="0" max="9" value="7" class="w-full mt-2 accent-amber-600" oninput="updateDecompose()">
+                            <span id="val-tenths" class="text-lg font-extrabold text-amber-900">0.7</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-sky-300 text-center shadow-sm">
+                            <span class="text-xs font-bold text-rose-600 block">Hundredths (0.01)</span>
+                            <input type="range" id="dec-hundredths" min="0" max="9" value="3" class="w-full mt-2 accent-rose-600" oninput="updateDecompose()">
+                            <span id="val-hundredths" class="text-lg font-extrabold text-rose-900">0.03</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border-2 border-sky-300 text-center shadow-inner">
+                        <span class="text-xs font-bold text-gray-500 uppercase">Composed Number Result:</span>
+                        <div id="composed-result" class="text-3xl font-extrabold text-sky-950 mt-1">15.73</div>
+                    </div>
+                </div>
+
+                <div id="method-2-content" class="hidden bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-200">
+                    <h3 class="font-bold text-lg text-emerald-900 mb-2 text-center">Worked Example 1: Calculate 9.75 + 13.42 (p. 54)</h3>
+                    <div class="max-w-md mx-auto bg-white p-5 rounded-2xl border-2 border-emerald-300 shadow-md">
+                        <div class="text-center font-mono text-xl font-bold text-emerald-950 space-y-1">
+                            <div>Estimate: 10 + 13 = 23</div>
+                            <div class="text-xs text-rose-600">9.75 + 13.42 = 23.17</div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button onclick="triggerConfetti(); showToast('⭐ Worked Example understood successfully!')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2 rounded-xl text-sm">
+                                Got It!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: Motivation Slide -->
+    <div class="slide" id="slide-5">
+        <div class="max-w-5xl w-full text-center">
+            <span class="bg-pink-100 text-pink-700 text-sm font-bold px-4 py-1.5 rounded-full border border-pink-300 inline-block mb-2">
+                <i class="fa-solid fa-heart-pulse text-pink-500 mr-1"></i> Special Motivation Slide
+            </span>
+            <h2 class="text-5xl font-extrabold text-gray-800 mb-2">You Are Ready To Shine! 🌟</h2>
+            <p class="text-gray-600 text-xl mb-6 max-w-3xl mx-auto font-medium">
+                Math is about practice, resilience, and solving problems step-by-step!
+            </p>
+
+            <div class="bg-gradient-to-r from-amber-400 via-rose-400 to-indigo-500 text-white p-6 rounded-3xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-left">
+                    <h4 class="text-2xl font-extrabold mb-1">Click below to unlock Exercise 5.1 practice!</h4>
+                    <p class="text-sm opacity-90">Let's tackle official book questions with interactive checks.</p>
+                </div>
+                <button onclick="showMotivationOverlay()" class="bg-white text-indigo-700 font-extrabold text-xl px-8 py-3.5 rounded-full shadow-lg hover:bg-yellow-300 transition transform hover:scale-105">
+                    Unlock Exercise 5.1 <i class="fa-solid fa-lock-open ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: Exercise 5.1 (Pages 54-55) -->
+    <div class="slide" id="slide-6">
+        <div class="book-page-container">
+            <div class="book-header-banner">
+                <span><i class="fa-solid fa-book-open mr-2"></i> Exercise 5.1 - Questions 1 &amp; 2</span>
+                <span class="text-xs bg-white/20 px-3 py-1 rounded-full">Pages 54–55</span>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Q1 -->
+                <div class="bg-sky-50 p-5 rounded-2xl border-2 border-sky-200">
+                    <div class="flex justify-between items-center mb-1">
+                        <h4 class="font-bold text-sky-900 text-base">1. What decimal number is represented by <code class="bg-white px-2 py-0.5 rounded border">70 + 8 + 0.3 + 0.01</code>? <span class="bg-sky-200 text-sky-900 text-xs px-2 py-0.5 rounded ml-2">p. 54</span></h4>
+                        <button onclick="toggleHint('hint-ex1')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> Hint
+                        </button>
+                    </div>
+                    <div id="hint-ex1" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2 rounded-xl text-xs font-bold my-2">
+                        💡 Combine: 70 + 8 + 0.3 + 0.01 = <code>78.31</code>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3">
+                        <input type="text" id="ex1-ans" class="w-32 text-center p-2 border-2 border-sky-400 rounded-xl font-bold text-lg" placeholder="Answer">
+                        <button onclick="checkEx1()" class="bg-sky-500 hover:bg-sky-600 text-white font-bold px-4 py-2 rounded-xl text-sm">Check</button>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-emerald-900 text-base">2. Estimate then calculate. <span class="bg-emerald-200 text-emerald-900 text-xs px-2 py-0.5 rounded ml-2">p. 54</span></h4>
+                        <button onclick="toggleHint('hint-ex2')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> Hint
+                        </button>
+                    </div>
+                    <div id="hint-ex2" class="hidden hint-box bg-amber-50 border border-amber-200 text-amber-900 p-2 rounded-xl text-xs font-bold my-2">
+                        💡 Always round to estimate first, then calculate column by column!
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">a) 28.2 + 13.4</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2a" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('a', '41.6')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">b) 12.46 + 1.31</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2b" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('b', '13.77')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">c) 13.41 + 4.39</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2c" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('c', '17.8')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">d) 28.2 - 13.8</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2d" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('d', '14.4')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">e) 123.1 - 47.3</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2e" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('e', '75.8')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-emerald-300">
+                            <span class="text-xs font-bold text-gray-700 block mb-1">f) 34.29 - 7.41</span>
+                            <div class="flex gap-2">
+                                <input type="text" id="ex2f" class="w-24 p-1 text-center border rounded font-bold text-sm" placeholder="Result">
+                                <button onclick="checkEx2('f', '26.88')" class="bg-emerald-500 text-white text-xs px-2 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: Exercise 5.1 (Pages 55-61) -->
+    <div class="slide" id="slide-7">
+        <div class="book-page-container">
+            <div class="book-header-banner">
+                <span><i class="fa-solid fa-book-open mr-2"></i> Exercise 5.1 - Questions 3, 4, 5, 6</span>
+                <span class="text-xs bg-white/20 px-3 py-1 rounded-full">Pages 55–61</span>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Q3: Alana's Homework -->
+                <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-300">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-amber-900 text-base">3. Alana hands in her homework. Mark the homework, correct errors, and advise Alana. <span class="bg-amber-200 text-amber-900 text-xs px-2 py-0.5 rounded ml-2">p. 55/61</span></h4>
+                        <button onclick="toggleHint('hint-ex3')" class="bg-amber-200 text-amber-900 text-xs font-bold px-3 py-1 rounded-full border border-amber-400">
+                            <i class="fa-solid fa-lightbulb mr-1 text-amber-600"></i> Hint
+                        </button>
+                    </div>
+                    <div id="hint-ex3" class="hidden hint-box bg-white border border-amber-300 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                        💡 <strong>Sum 1:</strong> 3.4 + 1.8 = 5.2 (forgot carry). <br>💡 <strong>Sum 2:</strong> 6.5 - 2.7 = 3.8 (subtracted smaller from larger).
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded-xl border border-amber-300 text-sm">
+                            <span class="font-bold text-gray-700 block mb-1">Alana's Sum 1: 3.4 + 1.8 = 4.12 ❌</span>
+                            <div class="flex gap-2 items-center">
+                                <span class="text-xs font-bold">Correct:</span>
+                                <input type="text" id="alana-1" class="w-24 p-1 border rounded text-center font-bold" placeholder="?">
+                                <button onclick="checkAlana('1', '5.2')" class="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-amber-300 text-sm">
+                            <span class="font-bold text-gray-700 block mb-1">Alana's Sum 2: 6.5 - 2.7 = 4.2 ❌</span>
+                            <div class="flex gap-2 items-center">
+                                <span class="text-xs font-bold">Correct:</span>
+                                <input type="text" id="alana-2" class="w-24 p-1 border rounded text-center font-bold" placeholder="?">
+                                <button onclick="checkAlana('2', '3.8')" class="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded">Check</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q4 & Q5 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-indigo-50 p-4 rounded-2xl border-2 border-indigo-200 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-indigo-900 text-sm mb-1">4. Fatima has $7.25. She is given $15.50. How much now? <span class="bg-indigo-200 text-indigo-900 text-xs px-2 py-0.5 rounded ml-2">p. 55/61</span></h4>
+                            <p class="text-xs text-gray-600 mb-2">Calculate total savings:</p>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <span class="font-bold text-sm">$</span>
+                            <input type="text" id="fatima-ans" class="w-28 p-1.5 border rounded font-bold text-center text-sm" placeholder="Total">
+                            <button onclick="checkFatima()" class="bg-indigo-600 text-white font-bold px-3 py-1.5 rounded text-xs">Check</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-rose-50 p-4 rounded-2xl border-2 border-rose-200 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-rose-900 text-sm mb-1">5. Sale: shop takes $2.25 off books A ($6.65), B ($16.35), C ($15.50), D ($8.70). Total cost of 4 books? <span class="bg-rose-200 text-rose-900 text-xs px-2 py-0.5 rounded ml-2">p. 55/61</span></h4>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <span class="font-bold text-sm">$</span>
+                            <input type="text" id="books-total" class="w-28 p-1.5 border rounded font-bold text-center text-sm" placeholder="Total cost">
+                            <button onclick="checkBooksTotal()" class="bg-rose-500 text-white font-bold px-3 py-1.5 rounded text-xs">Check</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-300">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-purple-950 text-base"><i class="fa-solid fa-icons text-purple-600 mr-1"></i> 6. Shape Symbol Logic Puzzles <span class="bg-purple-200 text-purple-900 text-xs px-2 py-0.5 rounded ml-2">p. 55/61</span></h4>
+                        <button onclick="toggleHint('hint-q6')" class="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full border border-amber-300">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i> Hint
+                        </button>
+                    </div>
+                    <div id="hint-q6" class="hidden hint-box bg-amber-50 border border-amber-300 text-amber-900 p-2.5 rounded-xl text-xs font-bold mb-3">
+                        💡 <strong>6a:</strong> 3 Squares = 42 → Square = 14. Square + Circle = 23 → Circle = 9.<br>
+                        💡 <strong>6b:</strong> 2 Triangles = 18 → Triangle = 9. Triangle - Circle = 5 → Circle = 4.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded-xl border border-purple-200">
+                            <span class="font-bold text-xs text-purple-900 block mb-2 flex items-center gap-1 flex-wrap">
+                                <strong>6a)</strong> 
+                                <i class="fa-solid fa-square text-sky-500"></i> + <i class="fa-solid fa-square text-sky-500"></i> + <i class="fa-solid fa-square text-sky-500"></i> = 42 
+                                <span class="mx-1 text-purple-300">|</span> 
+                                <i class="fa-solid fa-square text-sky-500"></i> + <i class="fa-solid fa-circle text-rose-500"></i> = 23
+                            </span>
+                            <div class="flex gap-2 items-center">
+                                <div class="relative w-20">
+                                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-sky-500 text-xs"><i class="fa-solid fa-square"></i></span>
+                                    <input type="number" id="q6a-sq" class="w-full pl-6 pr-1 py-1 border rounded text-center text-xs font-bold" placeholder="?">
+                                </div>
+                                <div class="relative w-20">
+                                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-rose-500 text-xs"><i class="fa-solid fa-circle"></i></span>
+                                    <input type="number" id="q6a-ci" class="w-full pl-6 pr-1 py-1 border rounded text-center text-xs font-bold" placeholder="?">
+                                </div>
+                                <button onclick="checkQ6a()" class="bg-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow hover:bg-purple-700">Check 6a</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-xl border border-purple-200">
+                            <span class="font-bold text-xs text-purple-900 block mb-2 flex items-center gap-1 flex-wrap">
+                                <strong>6b)</strong> 
+                                <i class="fa-solid fa-play -rotate-90 text-emerald-500"></i> + <i class="fa-solid fa-play -rotate-90 text-emerald-500"></i> = 18 
+                                <span class="mx-1 text-purple-300">|</span> 
+                                <i class="fa-solid fa-play -rotate-90 text-emerald-500"></i> - <i class="fa-solid fa-circle text-rose-500"></i> = 5
+                            </span>
+                            <div class="flex gap-2 items-center">
+                                <div class="relative w-20">
+                                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-emerald-500 text-xs"><i class="fa-solid fa-play -rotate-90"></i></span>
+                                    <input type="number" id="q6b-tr" class="w-full pl-6 pr-1 py-1 border rounded text-center text-xs font-bold" placeholder="?">
+                                </div>
+                                <div class="relative w-20">
+                                    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-rose-500 text-xs"><i class="fa-solid fa-circle"></i></span>
+                                    <input type="number" id="q6b-ci" class="w-full pl-6 pr-1 py-1 border rounded text-center text-xs font-bold" placeholder="?">
+                                </div>
+                                <button onclick="checkQ6b()" class="bg-purple-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow hover:bg-purple-700">Check 6b</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: Exercise 5.1 Q7-Q8 & Magic Square (Page 62) -->
+    <div class="slide" id="slide-8">
+        <div class="max-w-5xl w-full space-y-6">
+            <div class="text-center">
+                <span class="bg-teal-100 text-teal-800 text-sm font-bold px-4 py-1.5 rounded-full border border-teal-300">
+                    <i class="fa-solid fa-flag-checkered text-teal-600 mr-1"></i> Advanced Challenges &amp; Assessment (Learner's Book Page 62)
+                </span>
+                <h2 class="text-3xl font-extrabold text-gray-800 mt-1">Symbol Grid, Weight Equation &amp; Magic Square</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Q7 & Q8 -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-indigo-200 shadow-xl space-y-4">
+                    <div>
+                        <h3 class="font-bold text-base text-indigo-900 mb-1">7. Each symbol stands for a number. Find the value of each symbol (Row total 27, Row total 28, Column total 45). <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded ml-2">p. 62</span></h3>
+                        <div class="flex gap-2 items-center mt-2">
+                            <input type="text" id="q7-ans" class="w-36 p-1.5 border rounded text-center font-bold text-sm" placeholder="Square, Circle, Triangle">
+                            <button onclick="showToast('⭐ Correct! Square=15, Circle=6, Triangle=7')" class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded">Check Q7</button>
+                        </div>
+                    </div>
+
+                    <hr class="border-indigo-100">
+
+                    <div>
+                        <h3 class="font-bold text-base text-indigo-900 mb-1">8. What are possible values of [Square] and [Triangle] when Square + Square + Square + Triangle = 1.3 kg? <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded ml-2">p. 62</span></h3>
+                        <div class="flex gap-2 items-center mt-2">
+                            <input type="text" id="q8-ans" class="w-36 p-1.5 border rounded text-center font-bold text-sm" placeholder="e.g. 0.3kg and 0.4kg">
+                            <button onclick="showToast('⭐ Correct! If Square=0.3kg, Triangle=0.4kg (0.3+0.3+0.3+0.4 = 1.3kg)')" class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded">Check Q8</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Magic Square & Goals -->
+                <div class="bg-white p-6 rounded-3xl border-4 border-amber-300 shadow-xl space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-base text-amber-900">Think Like a Mathematician: Magic Square <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded ml-2">p. 62</span></h3>
+                            <button onclick="toggleHint('hint-ms')" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-0.5 rounded-full">Hint</button>
+                        </div>
+                        <div id="hint-ms" class="hidden hint-box bg-amber-50 p-2 rounded-xl text-xs font-bold mb-2">
+                            💡 Numbers 0.1 to 0.9. Sum of each row, column, and diagonal = 1.5!
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">Place 0.1 to 0.9 so rows/columns/diagonals equal 1.5.</p>
+                        <button onclick="triggerConfetti(); showToast('🎉 Magic Square solved! All sums equal 1.5!')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 rounded-xl text-sm">
+                            Celebrate Magic Square Solution
+                        </button>
+                    </div>
+
+                    <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                        <h4 class="font-bold text-emerald-900 text-sm mb-2"><i class="fa-solid fa-square-check text-emerald-600"></i> Look What I Can Do! (p. 62)</h4>
+                        <div class="space-y-2 text-xs font-bold text-gray-700">
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" onchange="if(this.checked) triggerConfetti()"> I can compose, decompose, and regroup numbers.</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" onchange="if(this.checked) triggerConfetti()"> I can estimate, add, and subtract decimal numbers.</label>
+                            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" onchange="if(this.checked) triggerConfetti()"> I can use shapes and symbols to represent unknown numbers.</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <button class="nav-btn prev-btn" onclick="changeSlide(-1)" style="display: none;">
+        <i class="fa-solid fa-arrow-left"></i> Previous
+    </button>
+    <button class="nav-btn next-btn" onclick="changeSlide(1)" style="display: flex;">
+        Next <i class="fa-solid fa-arrow-right"></i>
+    </button>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+        let activeLogoSide = 'left';
+        const STORAGE_KEY = 'grade5_unit5_persistent_header_pic_only_v3';
+
+        // Save current header picture state to localStorage so refreshing the browser never loses changes
+        function saveHeaderState() {
+            try {
+                const state = {
+                    authorLabel: document.getElementById('author-label')?.innerText || '',
+                    authorName: document.getElementById('author-name')?.innerText || '',
+                    authorRole: document.getElementById('author-role')?.innerText || '',
+                    leftLogoSrc: document.getElementById('logo-left-img')?.getAttribute('src') || '',
+                    rightLogoSrc: document.getElementById('logo-right-img')?.getAttribute('src') || ''
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+
+        // Load saved picture state on refresh
+        function loadHeaderState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+
+                if (data.authorLabel && document.getElementById('author-label')) document.getElementById('author-label').innerText = data.authorLabel;
+                if (data.authorName && document.getElementById('author-name')) document.getElementById('author-name').innerText = data.authorName;
+                if (data.authorRole && document.getElementById('author-role')) document.getElementById('author-role').innerText = data.authorRole;
+
+                const leftImg = document.getElementById('logo-left-img');
+                if (leftImg && data.leftLogoSrc) {
+                    leftImg.setAttribute('src', data.leftLogoSrc);
+                }
+
+                const rightImg = document.getElementById('logo-right-img');
+                if (rightImg && data.rightLogoSrc) {
+                    rightImg.setAttribute('src', data.rightLogoSrc);
+                }
+            } catch (e) {
+                console.warn('Could not load saved header state:', e);
+            }
+        }
+
+        // Process any uploaded or pasted image file and apply it to the selected logo side
+        function applyLogoFile(file, side) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 360;
+                    const MAX_HEIGHT = 160;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = Math.round(height * (MAX_WIDTH / width));
+                        width = MAX_WIDTH;
+                    }
+                    if (height > MAX_HEIGHT) {
+                        width = Math.round(width * (MAX_HEIGHT / height));
+                        height = MAX_HEIGHT;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const resizedDataUrl = canvas.toDataURL('image/png');
+
+                    const imgElem = document.getElementById(`logo-${side}-img`);
+                    if (imgElem) {
+                        imgElem.setAttribute('src', resizedDataUrl);
+                        imgElem.classList.remove('hidden');
+                    }
+
+                    saveHeaderState();
+                    closeLogoModal();
+                    showToast('✅ Logo picture updated! Click "Save & Download HTML" to keep a permanent file copy.');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Allow pasting an image directly from clipboard (Ctrl+V)
+        window.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items;
+            if (!items) return;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const file = items[i].getAsFile();
+                    applyLogoFile(file, activeLogoSide || 'left');
+                    e.preventDefault();
+                    break;
+                }
+            }
+        });
+
+        // Export & Download standalone HTML with the pasted/uploaded base64 logos permanently baked into the HTML source!
+        function downloadPermanentHTML() {
+            saveHeaderState();
+
+            // Close modals before serializing DOM
+            const modal = document.getElementById('logo-modal');
+            if (modal) {
+                modal.classList.add('hidden', 'opacity-0');
+                modal.classList.remove('flex', 'opacity-100');
+            }
+
+            // Clone document to clean up transient UI states before exporting
+            const clone = document.documentElement.cloneNode(true);
+
+            // Reset slide to Slide 1 in exported file so presentation starts cleanly
+            clone.querySelectorAll('.slide').forEach((s, idx) => {
+                if (idx === 0) s.classList.add('active');
+                else s.classList.remove('active');
+            });
+
+            // Clear confetti and toast in exported copy
+            const toastEl = clone.querySelector('#toast');
+            if (toastEl) toastEl.style.display = 'none';
+
+            const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Addition_and_Subtraction_Grade_5_Custom_Logo.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast('🎉 Presentation downloaded with your school logo & header permanently saved!');
+        }
+
+        function openLogoModal(side) {
+            activeLogoSide = side;
+            const titleEl = document.getElementById('logo-modal-title');
+            if (titleEl) {
+                titleEl.innerText = side === 'left' ? 'Paste or Upload Left Logo Picture' : 'Paste or Upload Right Logo Picture';
+            }
+            const modal = document.getElementById('logo-modal');
+            const card = document.getElementById('logo-modal-card');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+                card.classList.remove('scale-95');
+                card.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeLogoModal() {
+            const modal = document.getElementById('logo-modal');
+            const card = document.getElementById('logo-modal-card');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        function triggerFileInput() {
+            document.getElementById(`${activeLogoSide}LogoInput`).click();
+        }
+
+        function handleLogoUpload(event, side) {
+            const file = event.target.files[0];
+            if (!file) return;
+            applyLogoFile(file, side);
+            event.target.value = '';
+        }
+
+        function toggleHint(hintId) {
+            const hintElem = document.getElementById(hintId);
+            if (hintElem) hintElem.classList.toggle('hidden');
+        }
+
+        function updateSlide() {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            const activeSlide = document.getElementById(`slide-${currentSlide}`);
+            if (activeSlide) activeSlide.classList.add('active');
+
+            const progressPercent = (currentSlide / totalSlides) * 100;
+            document.getElementById('progress').style.width = `${progressPercent}%`;
+
+            document.querySelector('.prev-btn').style.display = currentSlide === 1 ? 'none' : 'flex';
+            document.querySelector('.next-btn').style.display = currentSlide === totalSlides ? 'none' : 'flex';
+            
+            if (currentSlide === 4) updateDecompose();
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updateSlide();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showMotivationOverlay() {
+            const overlay = document.getElementById('motivation-overlay');
+            const card = document.getElementById('motivation-card');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+                card.classList.remove('scale-50');
+                card.classList.add('scale-100');
+            }, 10);
+            triggerConfetti();
+        }
+
+        function proceedToPractice() {
+            const overlay = document.getElementById('motivation-overlay');
+            const card = document.getElementById('motivation-card');
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-50');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+                changeSlide(1);
+            }, 300);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            if (window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        // Warmup checks
+        function checkWarm1a() {
+            if (parseInt(document.getElementById('warm-1a').value) === 63) { showToast("✅ Correct! 100 - 63 = 37"); triggerConfetti(); }
+            else showToast("❌ Try again! 100 - 37 = ?");
+        }
+        function checkWarm1b() {
+            if (parseInt(document.getElementById('warm-1b').value) === 59) { showToast("✅ Correct! 131 + 59 = 190"); triggerConfetti(); }
+            else showToast("❌ Try again! 190 - 131 = ?");
+        }
+        function checkZaraDigits() {
+            if (document.getElementById('zara-digits').value.trim().replace(/,/g, '') === '6708') { showToast("⭐ Spot on! 6,708"); triggerConfetti(); }
+            else showToast("❌ Check your place values!");
+        }
+        function checkZaraRegroup() {
+            if (document.getElementById('zara-regroup').value.startsWith('valid')) { showToast("🎉 Valid regrouping option!"); triggerConfetti(); }
+        }
+        function checkCorrectCalc() {
+            if (parseInt(document.getElementById('correct-calc-ans').value) === 7686) {
+                document.getElementById('calc-error-feedback').innerText = "🎉 Perfect! 5973 + 1713 = 7,686.";
+                triggerConfetti();
+            } else {
+                document.getElementById('calc-error-feedback').innerText = "❌ Keep adding: 5,973 + 1,713";
+            }
+        }
+        function checkInequality() {
+            const val = document.getElementById('ineq-ans').value.trim();
+            if (val === '-5' || val === '-4') {
+                document.getElementById('ineq-feedback').innerText = "🎉 Correct! Whole numbers between -6 and -3 can be -5 or -4.";
+                triggerConfetti();
+            } else {
+                document.getElementById('ineq-feedback').innerText = "❌ Enter -5 or -4";
+            }
+        }
+
+        let currentTemp = -10;
+        function adjustTemp(change) {
+            currentTemp += change;
+            document.getElementById('temp-display').innerText = `${currentTemp}°C`;
+        }
+
+        function switchMethod(num) {
+            if (num === 1) {
+                document.getElementById('method-1-content').classList.remove('hidden');
+                document.getElementById('method-2-content').classList.add('hidden');
+                document.getElementById('btn-method-1').className = 'bg-sky-500 text-white font-bold px-6 py-2.5 rounded-full shadow-md';
+                document.getElementById('btn-method-2').className = 'bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-full shadow-md';
+            } else {
+                document.getElementById('method-2-content').classList.remove('hidden');
+                document.getElementById('method-1-content').classList.add('hidden');
+                document.getElementById('btn-method-2').className = 'bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-full shadow-md';
+                document.getElementById('btn-method-1').className = 'bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-full shadow-md';
+            }
+        }
+
+        function updateDecompose() {
+            const tens = parseInt(document.getElementById('dec-tens').value) * 10;
+            const ones = parseInt(document.getElementById('dec-ones').value);
+            const tenths = parseInt(document.getElementById('dec-tenths').value) / 10;
+            const hundredths = parseInt(document.getElementById('dec-hundredths').value) / 100;
+            document.getElementById('val-tens').innerText = tens;
+            document.getElementById('val-ones').innerText = ones;
+            document.getElementById('val-tenths').innerText = tenths.toFixed(1);
+            document.getElementById('val-hundredths').innerText = hundredths.toFixed(2);
+            document.getElementById('composed-result').innerText = (tens + ones + tenths + hundredths).toFixed(2);
+        }
+
+        function checkEx1() {
+            if (document.getElementById('ex1-ans').value.trim() === '78.31') { showToast("✅ Excellent! 78.31"); triggerConfetti(); }
+            else showToast("❌ Try aligning 70 + 8 + 0.3 + 0.01");
+        }
+
+        function checkEx2(sub, correct) {
+            if (document.getElementById(`ex2${sub}`).value.trim() === correct) { showToast(`✅ Correct (${correct})!`); triggerConfetti(); }
+            else showToast("❌ Recheck calculation");
+        }
+
+        function checkAlana(num, correct) {
+            if (document.getElementById(`alana-${num}`).value.trim() === correct) { showToast(`✅ Correct (${correct})!`); triggerConfetti(); }
+            else showToast("❌ Recheck calculation");
+        }
+
+        function checkFatima() {
+            if (document.getElementById('fatima-ans').value.trim() === '22.75') { showToast("✅ $22.75!"); triggerConfetti(); }
+            else showToast("❌ Add 7.25 + 15.50");
+        }
+
+        function checkBooksTotal() {
+            const val = document.getElementById('books-total').value.trim();
+            if (val === '38.2' || val === '38.20') { showToast("✅ Correct! Total sale cost is $38.20"); triggerConfetti(); }
+            else showToast("❌ Subtract 2.25 from each book and add them up (Total = $38.20)");
+        }
+
+        function checkQ6a() {
+            if (document.getElementById('q6a-sq').value.trim() === '14' && document.getElementById('q6a-ci').value.trim() === '9') {
+                showToast("✅ Correct! Square=14, Circle=9"); triggerConfetti();
+            } else showToast("❌ Recheck 6a");
+        }
+
+        function checkQ6b() {
+            if (document.getElementById('q6b-tr').value.trim() === '9' && document.getElementById('q6b-ci').value.trim() === '4') {
+                showToast("✅ Correct! Triangle=9, Circle=4"); triggerConfetti();
+            } else showToast("❌ Recheck 6b");
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const pieces = [];
+            const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'];
+            for (let i = 0; i < 80; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 10 + 5,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 5 + 2,
+                    angle: Math.random() * 6.28
+                });
+            }
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.y += p.speed;
+                    p.angle += 0.05;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+                    ctx.restore();
+                });
+                if (pieces.some(p => p.y < canvas.height)) requestAnimationFrame(render);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            render();
+        }
+
+        window.onload = function() {
+            loadHeaderState();
+            updateSlide();
+        };
+    </script>
+</body>
+</html>
